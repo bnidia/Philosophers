@@ -14,16 +14,14 @@
 # https://www.gnu.org/software/make/manual/html_node/index.html
 NAME 	= philo
 
-SRCDIR = ./
+SRCDIR = ./src/
 OBJDIR = ./obj/
 
-SRC	= philo.c
-SRC	+=
-SRC +=
+SRC	= main.c init.c time.c print.c process_eat_sleep_think.c
 OBJ = $(addprefix $(OBJDIR), $(notdir $(SRC:.c=.o)))
 D_FILES = $(addprefix $(OBJDIR), $(notdir$(SRC:.c=.d)))
-HEADER = philo.h
-#
+HEADER = ./src/philo.h
+
 CC = gcc -Werror -Wall -Wextra -fsanitize=address -pthread
 DEBUG_SWITCH = TRUE
 ifeq ($(DEBUG_SWITCH), TRUE)

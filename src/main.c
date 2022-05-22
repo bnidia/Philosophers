@@ -58,15 +58,7 @@ void *print(void *buf)
 
 int	main(int argc, char *argv[])
 {
-	t_setup	s;
-	pthread_t t1, t2;
-	char *str1 = "1111111111111111111111\n";
-	char *str2 = "2222222222222222222222\n";
+	int	err;
 
-	//if (init(&s, argc, argv) == -1)
-	//	return (0);
-	pthread_create(&t1, NULL, print, (void *)str1);
-	pthread_create(&t2, NULL, print, (void *)str2);
-	usleep(1000000);
 
 }
