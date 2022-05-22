@@ -14,7 +14,6 @@
 
 int	main(int argc, char *argv[])
 {
-	int			err;
 	t_main		m;
 
 	if (init(&m, argc, argv) != 0)
