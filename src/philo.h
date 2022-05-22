@@ -22,42 +22,55 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-typedef struct s_main
+typedef struct s_main	t_main;
+typedef struct s_philo	t_ph;
+typedef pthread_mutex_t mutex;
+
+struct s_main
 {
 // Входные данные
-	int 			number_of_philosophers;
-	int 			time_to_die;
-	int 			time_to_eat;
-	int 			time_to_sleep;
-	int 			number_of_times_each_philosopher_must_eat;
-// Мьютексы на вилки, печать и смерть
-	pthread_mutex_t	*mtx_forks;
-	pthread_mutex_t	mtx_print;
-	pthread_mutex_t	mtx_dead;
-// Переменная на случай ошибок
-	int 			err;
-}				t_main;
+	int 	number_of_philosophers;
+	int 	time_to_die;
+	int 	time_to_eat;
+	int 	time_to_sleep;
+	int 	number_of_times_each_philosopher_must_eat;
 
-typedef struct s_philo
+	// Ссылка на философов
+	t_ph	*philo;
+
+	// Мьютексы на вилки, печать и смерть
+	mutex	*mtx_forks;
+	mutex	mtx_print;
+	mutex	mtx_dead;
+
+	// Переменная на случай ошибок
+	int 			err;
+};
+
+struct s_philo
 {
-	int				id;
-	int				count_of_eat;
-	pthread_t		tid;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	mtx_eat;
-	long long int	last_time_eat;
-	t_main			*params;
-}				t_philo;
+	int			id;
+	int			count_of_eat;
+	pthread_t	tid;
+	mutex		*left_fork;
+	mutex		*right_fork;
+	mutex		mtx_eat;
+	size_t		last_time_eat;
+	t_main		*params;
+};
 
 // Основа программы
 int		init(t_main *m, int argc, char **argv);
 int 	simulation(t_main *m);
 int 	memory_clearing(t_main *m);
 
+// Функции для инициализации
+int	ft_atoi_zero(const char *num_ptr);
+
+
 
 long	get_time(void);
 void	ft_usleep(long time);
-void	print(t_philo *p, char *str);
+void	print(t_ph *p, char *str);
 
 #endif

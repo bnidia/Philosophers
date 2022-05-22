@@ -10,7 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_atoi(const char *num_ptr)
+#include "philo.h"
+
+int	ft_atoi_zero(const char *num_ptr)
 {
 	ssize_t		num;
 	int			sign;
@@ -31,18 +33,7 @@ int	ft_atoi(const char *num_ptr)
 	return ((int)num * sign);
 }
 
-int	init(t_setup *s, int argc, char *argv[])
-{
-	if (argc >= 5)
-	{
-		s->number_of_philosophers = ft_atoi(argv[1]);
-		s->time_to_die = ft_atoi(argv[2]);
-		s->time_to_eat = ft_atoi(argv[3]);
-		s->time_to_sleep = ft_atoi(argv[4]);
-	}
-	//if (argc == 6)
-	return (0);
-}
+
 
 void *print(void *buf)
 {

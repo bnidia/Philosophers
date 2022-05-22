@@ -16,6 +16,7 @@ int	main(int argc, char *argv[])
 {
 	t_main		m;
 
+	m = (t_main){};
 	if (init(&m, argc, argv) != 0)
 		return (m.err);
 	if (simulation(&m) !=0)

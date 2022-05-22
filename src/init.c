@@ -10,35 +10,68 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-static int	ft_init_philosophers(t_state *state)
+#include "philo.h"
+
+int	init(t_main *m, int argc, char *argv[])
+{
+	if (argc == 5 || argc == 6)
+	{
+	// Надо проверить подачу 001 философа
+		m->number_of_philosophers = ft_atoi_zero(argv[1]);
+		m->time_to_die = ft_atoi_zero(argv[2]);
+		m->time_to_eat = ft_atoi_zero(argv[3]);
+		m->time_to_sleep = ft_atoi_zero(argv[4]);
+		if ((*argv[1] != '0' && m->number_of_philosophers == 0)
+			|| (*argv[2] != '0' && m->time_to_die == 0)
+			|| (*argv[3] != '0' && m->time_to_eat == 0)
+			|| (*argv[3] != '0' && m->time_to_sleep == 0))
+			return (1);
+	}
+	if (argc == 6)
+	{
+		m->number_of_philosophers = ft_atoi_zero(argv[5]);
+		if (*argv[5] != '0' && m->number_of_philosophers == 0)
+			return (1);
+	}
+	// Используем ft_atoi_zero которая возвращает 0 как ошибку
+	// Поэтому нужно проверять на истинный ноль
+	// Переменные уже инициализированы 0
+	if (argc < 5 || argc > 6)
+		return (1);
+	return (0);
+}
+
+static int	init_philosophers(t_main *m)
 {
 	int			i;
 
-	state->philo = (t_philo *)malloc(sizeof(t_philo)
-									 * state->params->number_of_philosophers);
-	state->mtx_forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t)
-									 * state->params->number_of_philosophers);
-	if (state->philo == NULL || state->mtx_forks == NULL)
-		return (ERR_CODE_MALLOC);
+	i = m->number_of_philosophers;
+	m->philo = (t_ph *)malloc(sizeof(t_ph) * i);
+	m->mtx_forks = (mutex *)malloc(sizeof(mutex) * i);
+	if (m->philo == NULL || m->mtx_forks == NULL)
+		return (2);
 	i = 0;
-	while (i < state->params->number_of_philosophers)
+	while (i < m->number_of_philosophers)
 	{
-		state->philo[i].id = i + 1;
-		state->philo[i].count_of_eat = 0;
-		state->philo[i].left_fork = &state->mtx_forks[i];
-		if (i == state->params->number_of_philosophers - 1)
-			state->philo[i].right_fork = &state->mtx_forks[0];
+		m->philo[i] = (t_ph){};
+		m->philo[i].id = i;
+
+		// раздаем мьютексы на вилки
+		if (pthread_mutex_init(&m->mtx_forks[i], NULL))
+			return (3);
+		m->philo[i].left_fork = &m->mtx_forks[i];
+		// Последнему философу выдаем в правую руку вилку с меньшим числом
+		// как нам завещал в 1965 году Эдсгер Дейкстра
+		if (i == m->number_of_philosophers - 1)
+			m->philo[i].right_fork = &m->mtx_forks[0];
 		else
-			state->philo[i].right_fork = &state->mtx_forks[i + 1];
+			m->philo[i].right_fork = &m->mtx_forks[i + 1];
 
 		// инициализация мютекса на поесть
-		if (pthread_mutex_init(&state->philo[i].mtx_eat, NULL))
-			return (ERR_CODE_MUTEX);
-		state->philo[i].params = state->params;
+		if (pthread_mutex_init(&m->philo[i].mtx_eat, NULL))
+			return (4);
+		m->philo[i].params = m;
 
-		// инициализация мютекса на вилки
-		if (pthread_mutex_init(&state->mtx_forks[i], NULL))
-			return (ERR_CODE_MUTEX);
 		i++;
 	}
 	return (0);

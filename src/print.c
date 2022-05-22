@@ -52,7 +52,7 @@ void	ft_itoa(char *s, int *s_i, long nbr)
 	*s_i += numlen + 1;
 }
 
-void	print(t_philo *p, char *str)
+void	print(t_ph *p, char *str)
 {
 	char	s[64];
 	int		s_i;
@@ -67,7 +67,7 @@ void	print(t_philo *p, char *str)
 	write(1, s, s_i);
 }
 
-void	print_status(t_philo *p)
+void	print_status(t_ph *p)
 {
 	pthread_mutex_lock(&mtx_print);
 	if (DIED)

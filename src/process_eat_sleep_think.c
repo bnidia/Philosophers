@@ -12,18 +12,18 @@
 
 #include "philo.h"
 
-static void	ft_eat(t_philo *p);
+static void	ft_eat(t_ph *p);
 
 void	*process_eat_sleep_think(void *args)
 {
-	t_philo		*p;
+	t_ph		*p;
 
-	p = (t_philo *)args;
+	p = (t_ph *)args;
 	while (1)
 	{
 		ft_eat(p);
-		if (p->params->number_of_eat != -1
-			&& (p->count_of_eat >= p->params->number_of_eat))
+		if (p->count_of_eat != -1
+			&& (p->count_of_eat >= p->count_of_eat))
 			break ;
 		print(p, " is sleeping");
 		ft_usleep(p->params->time_to_sleep);
@@ -32,7 +32,7 @@ void	*process_eat_sleep_think(void *args)
 	return ((void *)0);
 }
 
-static void	ft_eat(t_philo *p)
+static void	ft_eat(t_ph *p)
 {
 	pthread_mutex_lock(p->left_fork);
 	print(p, " has taken a fork");
@@ -41,8 +41,8 @@ static void	ft_eat(t_philo *p)
 
 	print(p, " is eating");
 	ft_usleep(p->params->time_to_eat);
-	p->time_last_eat = get_time();
-	if (p->params->number_of_eat != -1)
+	p->last_time_eat = get_time();
+	if (p->count_of_eat != -1)
 		p->count_of_eat++;
 	pthread_mutex_unlock(p->right_fork); //поменять местами
 	pthread_mutex_unlock(p->left_fork);
