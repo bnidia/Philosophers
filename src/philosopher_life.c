@@ -6,39 +6,44 @@
 /*   By: bnidia <bnidia@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 08:42:42 by bnidia            #+#    #+#             */
-/*   Updated: 2022/05/22 16:07:23 by bnidia           ###    ########.fr      */
+/*   Updated: 2022/05/24 15:13:42 by bnidia           ###    ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_atoi_zero(const char *num_ptr)
-{
-	ssize_t		num;
-	int			sign;
+static void	ft_eat(t_ph *p);
 
-	num = 0;
-	sign = 1;
-	while (*num_ptr == '\t' || *num_ptr == '\n' || *num_ptr == '\v' \
-		|| *num_ptr == '\f' || *num_ptr == '\r' || *num_ptr == ' ')
-		num_ptr++;
-	if (*num_ptr == '-')
-		sign = -1;
-	if (*num_ptr == '-' || *num_ptr == '+')
-		num_ptr++;
-	while (*num_ptr >= '0' && *num_ptr <= '9')
-		num = num * 10 + *num_ptr++ - '0';
-	if (num * sign > INT_MAX || num * sign < INT_MIN)
-		return (0);
-	return ((int)num * sign);
+void	*process_eat_sleep_think(void *args)
+{
+	t_ph		*p;
+
+	p = (t_ph *)args;
+	while (1)
+	{
+		ft_eat(p);
+		if (p->count_of_eat != -1
+			&& (p->count_of_eat >= p->count_of_eat))
+			break ;
+		print(p, " is sleeping");
+		ft_usleep(p->params->time_to_sleep);
+		print(p, " is thinking");
+	}
+	return ((void *)0);
 }
 
-void *print(void *buf)
+static void	ft_eat(t_ph *p)
 {
-	for (int i = 0; i < 20; i++)
-	{
-		write(1, (char *)buf, strlen(buf));
-		usleep(100000);
-	}
-	return NULL;
+	pthread_mutex_lock(p->left_fork);
+	print(p, " has taken a fork");
+	pthread_mutex_lock(p->right_fork);
+	print(p, " has taken a fork");
+
+	print(p, " is eating");
+	ft_usleep(p->params->time_to_eat);
+	p->last_time_eat = get_time();
+	if (p->count_of_eat != -1)
+		p->count_of_eat++;
+	pthread_mutex_unlock(p->right_fork); //поменять местами
+	pthread_mutex_unlock(p->left_fork);
 }
