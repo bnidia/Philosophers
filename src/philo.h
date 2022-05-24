@@ -67,7 +67,8 @@ int 	memory_clearing(t_main *m);
 // Функции для инициализации
 int	ft_atoi_zero(const char *num_ptr);
 
-
+// Функция философа
+void	*p_life(void *args);
 
 long	get_time(void);
 void	ft_usleep(long time);
