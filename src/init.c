@@ -12,6 +12,8 @@
 
 #include "philo.h"
 
+static int	init_philosophers(t_main *m);
+
 int	init(t_main *m, int argc, char *argv[])
 {
 	if (argc == 5 || argc == 6)
@@ -38,6 +40,7 @@ int	init(t_main *m, int argc, char *argv[])
 	// Переменные уже инициализированы 0
 	if (argc < 5 || argc > 6)
 		return (1);
+	init_philosophers(m);
 	return (0);
 }
 
@@ -49,7 +52,10 @@ static int	init_philosophers(t_main *m)
 	m->philo = (t_ph *)malloc(sizeof(t_ph) * i);
 	m->mtx_forks = (mutex *)malloc(sizeof(mutex) * i);
 	if (m->philo == NULL || m->mtx_forks == NULL)
+	{
+		m->err = 2;
 		return (2);
+	}
 	i = 0;
 	while (i < m->number_of_philosophers)
 	{
@@ -57,7 +63,8 @@ static int	init_philosophers(t_main *m)
 		m->philo[i].id = i;
 
 		// раздаем мьютексы на вилки
-		if (pthread_mutex_init(&m->mtx_forks[i], NULL))
+		m->err = pthread_mutex_init(&m->mtx_forks[i], NULL);
+		if (m->err)
 			return (3);
 		m->philo[i].left_fork = &m->mtx_forks[i];
 		// Последнему философу выдаем в правую руку вилку с меньшим числом
@@ -68,10 +75,10 @@ static int	init_philosophers(t_main *m)
 			m->philo[i].right_fork = &m->mtx_forks[i + 1];
 
 		// инициализация мютекса на поесть
-		if (pthread_mutex_init(&m->philo[i].mtx_eat, NULL))
+		m->err = pthread_mutex_init(&m->philo[i].mtx_eat, NULL);
+		if (m->err)
 			return (4);
 		m->philo[i].params = m;
-
 		i++;
 	}
 	return (0);
