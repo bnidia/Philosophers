@@ -54,7 +54,6 @@ struct s_philo
 	pthread_t	tid;
 	mutex		*left_fork;
 	mutex		*right_fork;
-	mutex		mtx_eat;
 	size_t		last_time_eat;
 	t_main		*params;
 };

@@ -74,10 +74,7 @@ static int	init_philosophers(t_main *m)
 		else
 			m->philo[i].right_fork = &m->mtx_forks[i + 1];
 
-		// инициализация мютекса на поесть
-		m->err = pthread_mutex_init(&m->philo[i].mtx_eat, NULL);
-		if (m->err)
-			return (4);
+
 		m->philo[i].params = m;
 		i++;
 	}
