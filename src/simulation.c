@@ -12,14 +12,14 @@
 
 #include "philo.h"
 
-static int start_philosophers_lifes(t_main *m);
+static int start_philo_lifes(t_ph *p, int num_of_philo);
 
 int	simulation(t_main *m)
 {
 	int i;
 
 	// Даем жизнь философам
-	m->err = start_philosophers_lifes(m);
+	m->err = start_philo_lifes(m->philo, m->number_of_philosophers);
 	if (m->err != 0)
 		return (m->err);
 
@@ -30,6 +30,7 @@ int	simulation(t_main *m)
 	// время между приемами пищи тут
 	// Но лучше это делать в самом философе
 	i = 0;
+	// тут доделать
 	while (m->philo[i].count_of_eat != 0)
 	{
 		i++;
@@ -39,29 +40,28 @@ int	simulation(t_main *m)
 	return (0);
 }
 
-static int start_philosophers_lifes(t_main *m)
+static int start_philo_lifes(t_ph *p, int num_of_philo)
 {
 	int		i;
-	t_ph	*p;
 
 	i = 0;
-	while (i < m->number_of_philosophers)
+	// Сначала запускаем четных философов
+	while (i < num_of_philo)
 	{
-		p = &m->philo[i];
-		p->last_time_eat = get_time();
 		if (pthread_create(&p->tid, NULL, p_life, (void *) p) != 0)
 			return (6);
+		p[i].last_time_eat = get_time();
 		pthread_detach(p->tid);
-		usleep(100);
+		usleep(100); // какая задержка должна быть?
 		i += 2;
 	}
 	i = 1;
-	while (i < m->number_of_philosophers)
+	// Потом запускаем нечетных философов
+	while (i < num_of_philo)
 	{
-		p = &m->philo[i];
-		p->last_time_eat = get_time();
 		if (pthread_create(&p->tid, NULL, p_life, (void *) p) != 0)
 			return (6);
+		p[i].last_time_eat = get_time();
 		pthread_detach(p->tid);
 		usleep(100);
 		i += 2;
