@@ -12,7 +12,13 @@
 
 #include "philo.h"
 
-int	ft_atoi_zero(const char *num_ptr)
+/* ft_atoi_r converts string to integer
+ * saves to result converted value
+ * Returns: 1 - on errors when exceeds INT_MAX INT_MIN
+ * 0 - on normal conversion
+ * Example: "   -0156asf" -> -156
+ * */
+int	ft_atoi_r(const char *num_ptr, int *result)
 {
 	ssize_t		num;
 	int			sign;
@@ -29,8 +35,9 @@ int	ft_atoi_zero(const char *num_ptr)
 	while (*num_ptr >= '0' && *num_ptr <= '9')
 		num = num * 10 + *num_ptr++ - '0';
 	if (num * sign > INT_MAX || num * sign < INT_MIN)
-		return (0);
-	return ((int)num * sign);
+		return (1);
+	*result = (int)num;
+	return (0);
 }
 
 void *print(void *buf)
