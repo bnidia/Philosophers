@@ -33,7 +33,7 @@ struct s_main
 	int 	time_to_die;
 	int 	time_to_eat;
 	int 	time_to_sleep;
-	int 	number_of_times_each_philosopher_must_eat;
+	int 	number_of_eat;
 
 	// Ссылка на философов
 	t_ph	*philo;
@@ -41,7 +41,6 @@ struct s_main
 	// Мьютексы на вилки, печать и смерть
 	mutex	*mtx_forks;
 	mutex	mtx_print;
-	mutex	mtx_dead;
 
 	// Переменная на случай ошибок
 	int 			err;
@@ -49,13 +48,16 @@ struct s_main
 
 struct s_philo
 {
-	int			id;
-	int			count_of_eat;
-	pthread_t	tid;
-	mutex		*left_fork;
-	mutex		*right_fork;
-	size_t		last_time_eat;
-	t_main		*params;
+	int				id; //номер с 1, для вывода логов
+	int				count_of_eat;
+	pthread_t		tid;
+	mutex			*left_fork;
+	struct timeval	left_fork_tv; // время взятия левой вилки
+	mutex			*right_fork;
+	struct timeval	right_fork_tv; // время взятия вилки и начала еды
+
+	size_t			last_time_eat;
+	t_main			*params;
 };
 
 // Основа программы
@@ -64,7 +66,7 @@ int 	simulation(t_main *m);
 int 	memory_clearing(t_main *m);
 
 // Функции для инициализации
-int	ft_atoi_zero(const char *num_ptr);
+int		ft_atoi_r(const char *num_ptr, int *result);
 
 // Функция философа
 void	*p_life(void *args);

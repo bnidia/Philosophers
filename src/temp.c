@@ -14,9 +14,9 @@
 
 /* ft_atoi_r converts string to integer
  * saves to result converted value
- * Returns: 1 - on errors when exceeds INT_MAX INT_MIN
+ * Returns: 1 - on errors when exceeds INT_MAX INT_MIN or letters
  * 0 - on normal conversion
- * Example: "   -0156asf" -> -156
+ * Example: "   -0156" -> -156
  * */
 int	ft_atoi_r(const char *num_ptr, int *result)
 {
@@ -28,13 +28,12 @@ int	ft_atoi_r(const char *num_ptr, int *result)
 	while (*num_ptr == '\t' || *num_ptr == '\n' || *num_ptr == '\v' \
 		|| *num_ptr == '\f' || *num_ptr == '\r' || *num_ptr == ' ')
 		num_ptr++;
-	if (*num_ptr == '-')
-		sign = -1;
 	if (*num_ptr == '-' || *num_ptr == '+')
-		num_ptr++;
+		if (*num_ptr++ == '-')
+			sign = -1;
 	while (*num_ptr >= '0' && *num_ptr <= '9')
 		num = num * 10 + *num_ptr++ - '0';
-	if (num * sign > INT_MAX || num * sign < INT_MIN)
+	if (num * sign > INT_MAX || num * sign < INT_MIN || *num_ptr != '\0')
 		return (1);
 	*result = (int)num;
 	return (0);
