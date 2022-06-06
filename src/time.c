@@ -11,31 +11,28 @@
 /* ************************************************************************** */
 
 #include "philo.h"
+/* You can use macros available in standard libraries, only if those
+ * ones are allowed in the scope of the given project. */
 
 /* get_time() сохраняет в статической переменной время начала работы программы.
- * Возвращает время, которое прошло с начала работы программы */
-long	get_time(void)
-{
-	static struct timeval	t;
-	static long				start_time;
-	static long				work_time;
+ * Возвращает время, которое прошло с начала работы программы
+ * timercmp(&t, &t, <) - макрос сравнения времени */
 
-	gettimeofday(&t, NULL);
-	if (start_time == 0)
-		start_time = t.tv_sec * 1000 + t.tv_usec / 1000;
-	work_time = t.tv_sec * 1000 + t.tv_usec / 1000 - start_time;
-	return (work_time);
+void sleep_to(t_time t_event)
+{
+	t_time	t_current;
+
+	while (!gettimeofday(&t_current, NULL) && timercmp(&t_current, &t_event, <))
+		usleep(1);
 }
 
-void	ft_usleep(long time)
+void convert_time(t_time *t_event, long time)
 {
-	long	t;
-
-	t = get_time();
-	while (1)
+	t_event->tv_sec += time / 1000;
+	t_event->tv_usec += time % 1000 * 1000;
+	if (t_event->tv_usec >= 1000000)
 	{
-		if (get_time() - t >= time)
-			break ;
-		usleep(1);
+		t_event->tv_sec++;
+		t_event->tv_usec -= 1000000;
 	}
 }

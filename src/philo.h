@@ -12,6 +12,9 @@
 
 #ifndef PHILO_H
 # define PHILO_H
+# define YELLOW "\e[33m"
+# define YELLOW_RESET "\e[0m"
+# define TIME_FORMAT 9
 
 # include <limits.h>
 # include <pthread.h>
@@ -24,6 +27,7 @@
 
 typedef struct s_main	t_main;
 typedef struct s_philo	t_ph;
+typedef struct timeval	t_time;
 typedef pthread_mutex_t mutex;
 
 struct s_main
@@ -41,23 +45,23 @@ struct s_main
 	// Мьютексы на вилки, печать и смерть
 	mutex	*mtx_forks;
 	mutex	mtx_print;
-
-	// Переменная на случай ошибок
-	int 			err;
+	mutex	mtx_dead;
+	mutex	mtx_satisfied;
+	// Кто-то умер
+	int		dead;
+	int 	satisfied;
 };
 
 struct s_philo
 {
-	int				id; //номер с 1, для вывода логов
+	char			id[16]; //номер с 1, для вывода логов
 	int				count_of_eat;
 	pthread_t		tid;
 	mutex			*left_fork;
-	struct timeval	left_fork_tv; // время взятия левой вилки
 	mutex			*right_fork;
-	struct timeval	right_fork_tv; // время взятия вилки и начала еды
-
-	size_t			last_time_eat;
-	t_main			*params;
+	t_time			t_event;
+	t_time			t_last_time_eat;
+	t_main			*m;
 };
 
 // Основа программы
@@ -67,12 +71,15 @@ int 	memory_clearing(t_main *m);
 
 // Функции для инициализации
 int		ft_atoi_r(const char *num_ptr, int *result);
+void	itoa_append(char *s, int *s_i, long nbr);
+void	str_append(char *s, int *s_i, char *str);
 
 // Функция философа
 void	*p_life(void *args);
 
-long	get_time(void);
-void	ft_usleep(long time);
-void	print(t_ph *p, char *str);
+void	sleep_to(t_time t_event);
+void	print(t_ph *p, t_time time, char *str);
+void	print_all_ate(t_main *m);
+void	convert_time(t_time *t_event, long time);
 
 #endif

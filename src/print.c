@@ -16,75 +16,33 @@
 //2806 4 has taken a fork
 //All the philosophers ate 7 times. Process is finished
 
-size_t	ft_numlen(unsigned long long num, int base)
-{
-	size_t	i;
-
-	i = 0;
-	if (num == 0)
-		return (1);
-	while (num)
-	{
-		num /= base;
-		i++;
-	}
-	return (i);
-}
-
-void	ft_itoa(char *s, int *s_i, long nbr)
-{
-	int	numlen;
-	int	i;
-
-	if (nbr == 0)
-	{
-		s[(*s_i)++] = '0';
-		return ;
-	}
-	numlen = (int)ft_numlen(nbr, 10) - 1;
-	i = 0;
-	while (i <= numlen)
-	{
-		s[*s_i + numlen - i] = "0123456789"[nbr % 10];
-		nbr /= 10;
-		i++;
-	}
-	*s_i += numlen + 1;
-}
-
-void	print(t_ph *p, char *str)
+void	print(t_ph *p, t_time time, char *str)
 {
 	char	s[64];
 	int		s_i;
 
 	s_i = 0;
-	ft_itoa(s, &s_i, get_time());
+	itoa_append(s, &s_i, time.tv_sec);
 	s[s_i++] = ' ';
-	ft_itoa(s, &s_i, p->id);
-	while(*str != '\0')
-		s[s_i++] = *str++;
-	s[s_i++] = '\n';
+	itoa_append(s, &s_i, time.tv_usec);
+	s[s_i++] = ' ';
+	str_append(s, &s_i, p->id);
+	str_append(s, &s_i, str);
+	pthread_mutex_lock(&p->m->mtx_print);
 	write(1, s, s_i);
+	pthread_mutex_unlock(&p->m->mtx_print);
 }
 
-void	print_status(t_ph *p)
-{
-	pthread_mutex_lock(&mtx_print);
-	if (DIED)
-		print(p, " is died. Process is finished");
-	pthread_mutex_unlock(&mtx_print);
-}
-
-void	print_end()
+void	print_all_ate(t_main *m)
 {
 	char	s[32];
 	int 	s_i;
 
 	s_i = 0;
-	pthread_mutex_lock(&mtx_print);
-	write(1, "All the philosophers ate ", 25);
-	ft_itoa(s, &s_i, setup->number_of_eat);
+	str_append(s, &s_i, "All the philosophers ate ");
+	itoa_append(s, &s_i, m->number_of_eat);
+	str_append(s, &s_i, " times. Process is finished\n");
+	pthread_mutex_lock(&m->mtx_print);
 	write(1, s, s_i);
-	write(1, " times. Process is finished\n", 27);
-	pthread_mutex_unlock(&mtx_print);
+	pthread_mutex_unlock(&m->mtx_print);
 }

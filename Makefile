@@ -17,13 +17,13 @@ NAME 	= philo
 SRCDIR = ./src/
 OBJDIR = ./obj/
 
-SRC	= main.c init.c time.c print.c process_eat_sleep_think.c temp.c \
-philosopher_life.c simulation.c
+SRC	= main.c init.c time.c print.c temp.c philosopher_life.c simulation.c \
+ft_itoa_append.c ft_str_append.c memory_clearing.c
 OBJ = $(addprefix $(OBJDIR), $(notdir $(SRC:.c=.o)))
 D_FILES = $(addprefix $(OBJDIR), $(notdir$(SRC:.c=.d)))
 HEADER = ./src/philo.h
 
-CC = gcc -Werror -Wall -Wextra -fsanitize=address -pthread
+CC = gcc -Werror -Wall -Wextra -pthread #-fsanitize=address
 DEBUG_SWITCH = TRUE
 ifeq ($(DEBUG_SWITCH), TRUE)
 	DEBUG = -g

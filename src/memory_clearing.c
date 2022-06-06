@@ -6,35 +6,29 @@
 /*   By: bnidia <bnidia@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 08:42:42 by bnidia            #+#    #+#             */
-/*   Updated: 2022/05/22 16:07:23 by bnidia           ###    ########.fr      */
+/*   Updated: 2022/05/31 18:43:23 by bnidia           ###    ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* ft_atoi_r converts string to integer
- * saves to result converted value
- * Returns: 1 - on errors when exceeds INT_MAX INT_MIN or letters
- * 0 - on normal conversion
- * Example: "   -0156" -> -156
- * */
-int	ft_atoi_r(const char *num_ptr, int *result)
+int 	memory_clearing(t_main *m)
 {
-	ssize_t		num;
-	int			sign;
+	int i;
 
-	num = 0;
-	sign = 1;
-	while (*num_ptr == '\t' || *num_ptr == '\n' || *num_ptr == '\v' \
-		|| *num_ptr == '\f' || *num_ptr == '\r' || *num_ptr == ' ')
-		num_ptr++;
-	if (*num_ptr == '-' || *num_ptr == '+')
-		if (*num_ptr++ == '-')
-			sign = -1;
-	while (*num_ptr >= '0' && *num_ptr <= '9')
-		num = num * 10 + *num_ptr++ - '0';
-	if (num * sign > INT_MAX || num * sign < INT_MIN || *num_ptr != '\0')
-		return (1);
-	*result = (int)num;
+	i = 0;
+	while (i != m->number_of_philosophers)
+	{
+		pthread_mutex_destroy(&m->mtx_forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&m->mtx_print);
+	pthread_mutex_destroy(&m->mtx_dead);
+	pthread_mutex_destroy(&m->mtx_satisfied);
+	free(m->mtx_forks);
+	m->mtx_forks = NULL;
+	free(m->philo);
+	m->philo = NULL;
+
 	return (0);
 }
