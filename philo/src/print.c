@@ -18,7 +18,7 @@
 
 void	print(t_ph *p, t_time time, char *str)
 {
-	char	s[64];
+	char	s[128];
 	int		s_i;
 
 	s_i = 0;
@@ -35,7 +35,7 @@ void	print(t_ph *p, t_time time, char *str)
 
 void	print_all_ate(t_main *m)
 {
-	char	s[32];
+	char	s[128];
 	int 	s_i;
 
 	s_i = 0;
