@@ -12,37 +12,52 @@
 
 #include "philo.h"
 
-//801 1 is died. Process is finished
-//2806 4 has taken a fork
-//All the philosophers ate 7 times. Process is finished
+static void	yellow(void);
+static void	reset(void);
 
-void	print(t_ph *p, t_time time, char *str)
+/** @name print
+ * @description prints to the screen logs about philosopher actions
+ * @param t_time time - time to print in message, t_ph *p - used to find a
+ * number id of philosopher, char *str - string to print
+ * @return nothing
+ * @author bnidia													*/
+void	print(t_time time, t_ph *p, char *str)
 {
-	char	s[128];
-	int		s_i;
+	static t_mutex	screen = PTHREAD_MUTEX_INITIALIZER;
+	int				id;
 
-	s_i = 0;
-	itoa_append(s, &s_i, time.tv_sec);
-	s[s_i++] = ' ';
-	itoa_append(s, &s_i, time.tv_usec);
-	s[s_i++] = ' ';
-	str_append(s, &s_i, p->id);
-	str_append(s, &s_i, str);
-	pthread_mutex_lock(&p->m->mtx_print);
-	write(1, s, s_i);
-	pthread_mutex_unlock(&p->m->mtx_print);
+	id = p->id;
+	pthread_mutex_lock(&screen);
+	if (id % 2 == 0)
+		yellow();
+	printf
+	("%ld %ld %d %s",
+			time.tv_sec,
+			time.tv_usec,
+			id,
+			str
+	);
+	if (id % 2 == 0)
+		reset();
+	pthread_mutex_unlock(&screen);
 }
 
-void	print_all_ate(t_main *m)
+/** @name yellow
+ * @description sets printing font to yellow colour
+ * @param nothing
+ * @return nothing
+ * @author bnidia													*/
+static void	yellow(void)
 {
-	char	s[128];
-	int 	s_i;
+	printf("\e[33m");
+}
 
-	s_i = 0;
-	str_append(s, &s_i, "All the philosophers ate ");
-	itoa_append(s, &s_i, m->number_of_eat);
-	str_append(s, &s_i, " times. Process is finished\n");
-	pthread_mutex_lock(&m->mtx_print);
-	write(1, s, s_i);
-	pthread_mutex_unlock(&m->mtx_print);
+/** @name reset
+ * @description resets colour for printing font
+ * @param nothing
+ * @return nothing
+ * @author bnidia													*/
+static void	reset(void)
+{
+	printf("\e[0m");
 }

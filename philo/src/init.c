@@ -14,61 +14,65 @@
 
 static int	init_philosophers(t_main *m);
 
+/** @name init
+ * @description initialises main struct with parameters from command line,
+ * checks some input errors and starts init_philosophers function
+ * @param t_main *m a main program struct
+ * int argc, char *argv[] - command line parameters
+ * @return 0 if successful, other values on error
+ * @author bnidia														*/
 int	init(t_main *m, int argc, char *argv[])
 {
 	if (argc != 5 && argc != 6)
-		return ((int)write(1, "Arguments error. Need 4 or 5.\n", 30));
+		return (printf("Arguments error. Need 4 or 5.\n"));
 	if (ft_atoi_r(argv[1], &m->number_of_philosophers)
 		|| ft_atoi_r(argv[2], &m->time_to_die)
 		|| ft_atoi_r(argv[3], &m->time_to_eat)
 		|| ft_atoi_r(argv[4], &m->time_to_sleep))
-		return (1);
+		return (printf("Parameters parsing error.\n"));
 	if (argc == 6 && ft_atoi_r(argv[5], &m->number_of_eat))
-		return (1);
-	// Используем ft_atoi_r которая возвращает 1 как ошибку
-	// Переменные уже инициализированы 0
+		return (printf("Parameter parsing error.\n"));
 	if (m->number_of_philosophers < 1 || m->time_to_die < 0
 		|| m->time_to_eat < 0 || m->time_to_sleep < 0
 		|| (argc == 6 && m->number_of_eat < 0))
-		return ((int)write(1, "Invalid arguments.\n", 19));
+		return (printf("Invalid arguments.\n"));
 	if (init_philosophers(m) != 0)
-		return ((int)write(1, "init_philosophers error\n", 24));
-	if (pthread_mutex_init(&m->mtx_print, NULL) != 0)
-		write(1, "Mutex print. Init error.\n", 25);
+		return (printf("init_philosophers error\n"));
 	return (0);
 }
 
+/** @name init_philosophers
+ * @description allocates memory for forks and philosophers,
+ * initialises mutex for forks, saves them to left and right
+ * philosophers hands
+ * The numbering of philosophers in the conclusion begins with one.
+ * We give the last philosopher a fork with a smaller number in his right hand,
+ * as Edsger Dijkstra bequeathed to us in 1965
+ * @param t_main *m a main program struct
+ * @return 0 if successful, other values on error
+ * @author bnidia								*/
 static int	init_philosophers(t_main *m)
 {
 	int	i;
-	int s_i;
 
 	i = m->number_of_philosophers;
 	m->philo = (t_ph *)malloc(sizeof(t_ph) * i);
-	m->mtx_forks = (mutex *)malloc(sizeof(mutex) * i);
+	m->mtx_forks = (t_mutex *)malloc(sizeof(t_mutex) * i);
 	if (m->philo == NULL || m->mtx_forks == NULL)
-		return ((int)write(1, "Memory. Malloc error.\n", 22));
-	// нумерация философов в выводе начинается с одного
+		return (printf("Memory. Malloc error.\n"));
 	i = 0;
-
 	while (i < m->number_of_philosophers)
 	{
 		m->philo[i] = (t_ph){};
-		s_i = 0;
-		itoa_append(m->philo[i].id, &s_i, i + 1);
-		m->philo[i].count_of_eat = m->number_of_eat;
-
-		// раздаем мьютексы на вилки
+		m->philo[i].id = i + 1;
+		m->philo[i].number_of_eat = m->number_of_eat;
 		if (pthread_mutex_init(&m->mtx_forks[i], NULL) != 0)
-			return ((int)write(1, "Mutex fork. Init error.\n", 24));
+			return (printf("Init t_mutex fork error.\n"));
 		m->philo[i].left_fork = &m->mtx_forks[i];
-		// Последнему философу выдаем в правую руку вилку с меньшим числом
-		// как нам завещал в 1965 году Эдсгер Дейкстра
 		if (i == m->number_of_philosophers - 1)
 			m->philo[i].right_fork = &m->mtx_forks[0];
 		else
 			m->philo[i].right_fork = &m->mtx_forks[i + 1];
-
 		m->philo[i].m = m;
 		i++;
 	}

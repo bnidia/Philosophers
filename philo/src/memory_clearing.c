@@ -12,9 +12,14 @@
 
 #include "philo.h"
 
-int 	memory_clearing(t_main *m)
+/** @name memory_clearing
+ * @description clears the memory at the end of the program
+ * @param t_main *m a main program struct
+ * @return nothing
+ * @author bnidia								*/
+void	memory_clearing(t_main *m)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i != m->number_of_philosophers)
@@ -22,13 +27,8 @@ int 	memory_clearing(t_main *m)
 		pthread_mutex_destroy(&m->mtx_forks[i]);
 		i++;
 	}
-	pthread_mutex_destroy(&m->mtx_print);
-	pthread_mutex_destroy(&m->mtx_dead);
-	pthread_mutex_destroy(&m->mtx_satisfied);
 	free(m->mtx_forks);
 	m->mtx_forks = NULL;
 	free(m->philo);
 	m->philo = NULL;
-
-	return (0);
 }

@@ -11,22 +11,36 @@
 /* ************************************************************************** */
 
 #include "philo.h"
+#include <unistd.h>
 /* You can use macros available in standard libraries, only if those
- * ones are allowed in the scope of the given project. */
+ * ones are allowed in the scope of the given project.
+ * timercmp(&t, &t, <) - time comparison macro */
 
-/* get_time() сохраняет в статической переменной время начала работы программы.
- * Возвращает время, которое прошло с начала работы программы
- * timercmp(&t, &t, <) - макрос сравнения времени */
-
-void sleep_to(t_time t_event)
+/** @name sleep_to
+ * @description sleeps from t_event time milliseconds
+ * @param t_time t_event, int time
+ * @return void
+ * @author bnidia										*/
+void	sleep_to(t_time t_event, int time)
 {
 	t_time	t_current;
+	long	sleep_time;
 
+	calc_time_sum(&t_event, time);
+	sleep_time = time * 1000;
 	while (!gettimeofday(&t_current, NULL) && timercmp(&t_current, &t_event, <))
-		usleep(1);
+	{
+		usleep(sleep_time * 9 / 10);
+		sleep_time -= sleep_time * 9 / 10;
+	}
 }
 
-void convert_time(t_time *t_event, long time)
+/** @name calc_time_sum
+ * @description adds time in milliseconds to the t_event
+ * @param t_time *t_event - where to add, long time - what to add
+ * @return void, processed value saves in t_time *t_event
+ * @author bnidia										*/
+t_time	calc_time_sum(t_time *t_event, long time)
 {
 	t_event->tv_sec += time / 1000;
 	t_event->tv_usec += time % 1000 * 1000;
@@ -35,4 +49,5 @@ void convert_time(t_time *t_event, long time)
 		t_event->tv_sec++;
 		t_event->tv_usec -= 1000000;
 	}
+	return (*t_event);
 }

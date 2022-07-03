@@ -12,12 +12,12 @@
 
 #include "philo.h"
 
-/* ft_atoi_r converts string to integer
- * saves to result converted value
- * Returns: 1 - on errors when exceeds INT_MAX INT_MIN or letters
- * 0 - on normal conversion
- * Example: "   -0156" -> -156
- * */
+/** @name ft_atoi_r
+ * @description converts string to integer
+ * @param const char *num_ptr, int *result
+ * @return 0 if successful, 1 as error, when >INT_MAX <INT_MIN or letters
+ * @example "   -0156" -> -156
+ * @author bnidia								*/
 int	ft_atoi_r(const char *num_ptr, int *result)
 {
 	ssize_t		num;

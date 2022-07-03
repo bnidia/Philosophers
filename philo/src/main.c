@@ -12,15 +12,20 @@
 
 #include "philo.h"
 
+/** @name main
+ * @description starting point of the program
+ * @param int argc, char *argv[] - command line parameters
+ * @return 0 on success, other values on error
+ * @author bnidia (doxygen)								*/
 int	main(int argc, char *argv[])
 {
 	t_main		m;
 
 	m = (t_main){};
 	if (init(&m, argc, argv) != 0)
-		return ((int)write(1, "init() error\n", 13));
-	if (simulation(&m) !=0)
-		return ((int)write(1, "simulation() error\n", 19));
+		return (printf("init() error\n"));
+	if (simulation(&m) != 0)
+		return (printf("simulation() error\n"));
 	memory_clearing(&m);
 	return (0);
 }

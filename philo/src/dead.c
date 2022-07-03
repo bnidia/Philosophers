@@ -6,47 +6,32 @@
 /*   By: bnidia <bnidia@student.21-school.ru>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/04 08:42:42 by bnidia            #+#    #+#             */
-/*   Updated: 2022/05/30 15:43:17 by bnidia           ###    ########.fr      */
+/*   Updated: 2022/07/02 10:42:11 by bnidia           ###    ########.fr      */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_numlen(unsigned long long num, int base);
-
-void	itoa_append(char *s, int *s_i, long nbr)
+/** @name dead_handler
+ * @description controls number of eat, when it equals to desired number of eat
+ * @param bool set_dead true if dead, false if need to check others dead
+ * @return true someone is dead, false - no one is dead
+ * @author bnidia													*/
+bool	dead_handler(t_ph *p, bool set_dead)
 {
-	int	numlen;
-	int	i;
+	static t_mutex	mtx_dead = PTHREAD_MUTEX_INITIALIZER;
+	static bool		dead = false;
 
-	if (nbr == 0)
+	if (p && timercmp(&p->event, &p->eat_before, >))
+		set_dead = true;
+	pthread_mutex_lock(&mtx_dead);
+	if (set_dead)
+		dead = true;
+	if (dead)
 	{
-		s[(*s_i)++] = '0';
-		return ;
+		pthread_mutex_unlock(&mtx_dead);
+		return (true);
 	}
-	numlen = (int)ft_numlen(nbr, 10) - 1;
-	i = 0;
-	while (i <= numlen)
-	{
-
-		s[*s_i + numlen - i] = "0123456789"[nbr % 10];
-		nbr /= 10;
-		i++;
-	}
-	*s_i += numlen + 1;
-}
-
-int	ft_numlen(unsigned long long num, int base)
-{
-	int	i;
-
-	i = 0;
-	if (num == 0)
-		return (1);
-	while (num)
-	{
-		num /= base;
-		i++;
-	}
-	return (i);
+	pthread_mutex_unlock(&mtx_dead);
+	return (false);
 }

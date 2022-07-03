@@ -12,9 +12,6 @@
 
 #ifndef PHILO_H
 # define PHILO_H
-# define YELLOW "\e[33m"
-# define YELLOW_RESET "\e[0m"
-# define TIME_FORMAT 9
 
 # include <limits.h>
 # include <pthread.h>
@@ -23,63 +20,48 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
-# include <unistd.h>
 
 typedef struct s_main	t_main;
 typedef struct s_philo	t_ph;
 typedef struct timeval	t_time;
-typedef pthread_mutex_t mutex;
+typedef pthread_mutex_t	t_mutex;
 
 struct s_main
 {
-// Входные данные
-	int 	number_of_philosophers;
-	int 	time_to_die;
-	int 	time_to_eat;
-	int 	time_to_sleep;
-	int 	number_of_eat;
-
-	// Ссылка на философов
+	int		number_of_philosophers;
+	int		time_to_die;
+	int		time_to_eat;
+	int		time_to_sleep;
+	int		number_of_eat;
 	t_ph	*philo;
-
-	// Мьютексы на вилки, печать и смерть
-	mutex	*mtx_forks;
-	mutex	mtx_print;
-	mutex	mtx_dead;
-	mutex	mtx_satisfied;
-	// Кто-то умер
-	int		dead;
-	int 	satisfied;
+	t_mutex	*mtx_forks;
 };
 
 struct s_philo
 {
-	char			id[16]; //номер с 1, для вывода логов
-	int				count_of_eat;
+	int				id;
 	pthread_t		tid;
-	mutex			*left_fork;
-	mutex			*right_fork;
-	t_time			t_event;
-	t_time			t_last_time_eat;
+	t_mutex			*left_fork;
+	t_mutex			*right_fork;
+	int				number_of_eat;
+	struct timeval	event;
+	struct timeval	eat_before;
 	t_main			*m;
 };
 
-// Основа программы
+// The basis of the program
 int		init(t_main *m, int argc, char **argv);
-int 	simulation(t_main *m);
-int 	memory_clearing(t_main *m);
+int		simulation(t_main *m);
+void	memory_clearing(t_main *m);
 
-// Функции для инициализации
+// Functions for initialization
 int		ft_atoi_r(const char *num_ptr, int *result);
-void	itoa_append(char *s, int *s_i, long nbr);
-void	str_append(char *s, int *s_i, char *str);
 
-// Функция философа
-void	*p_life(void *args);
-
-void	sleep_to(t_time t_event);
-void	print(t_ph *p, t_time time, char *str);
-void	print_all_ate(t_main *m);
-void	convert_time(t_time *t_event, long time);
+// The function of the philosopher
+void	*philosopher(void *args);
+void	sleep_to(t_time t_event, int time);
+void	print(t_time time, t_ph *p, char *str);
+t_time	calc_time_sum(t_time *t_event, long time);
+bool	dead_handler(t_ph *p, bool set_dead);
 
 #endif
