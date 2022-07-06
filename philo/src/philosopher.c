@@ -26,9 +26,13 @@ static int	eat_counting(t_ph *p);
 void	*philosopher(void *args)
 {
 	t_ph			*p;
+	t_time			best_before;
 
 	p = (t_ph *)args;
-	gettimeofday(&p->eat_before, NULL);
+	gettimeofday(&best_before, NULL);
+	calc_time_sum(&best_before, p->m->time_to_die);
+	read_write_best_before(p, WRITE, &best_before);
+	dead_handler(p);
 	while (!(
 			eat(p) || \
 			sleep(p) || \
@@ -44,27 +48,23 @@ void	*philosopher(void *args)
  * @author bnidia												*/
 static int	eat(t_ph *p)
 {
-	gettimeofday(&p->event, NULL);
-	if (dead_handler(p, false))
-		return (1);
+	t_time	best_before;
+
 	pthread_mutex_lock(p->left_fork);
 	gettimeofday(&p->event, NULL);
-	print(p->event, p, " has taken a fork\n");
+	print(p->event, p, "has taken a fork\n", false);
 	pthread_mutex_lock(p->right_fork);
 	gettimeofday(&p->event, NULL);
-	print(p->event, p, " has taken a fork\n");
-	print(p->event, p, " is eating\n");
-	if (eat_counting(p))
-	{
-		pthread_mutex_unlock(p->right_fork);
-		pthread_mutex_unlock(p->left_fork);
-		return (1);
-	}
-	p->eat_before = \
-	calc_time_sum(&p->event, p->m->time_to_eat + p->m->time_to_die);
+	print(p->event, p, "has taken a fork\n", false);
+	print(p->event, p, "is eating\n", false);
+	best_before = p->event;
+	calc_time_sum(&best_before, p->m->time_to_die);
+	read_write_best_before(p, WRITE, &best_before);
 	sleep_to(p->event, p->m->time_to_eat);
 	pthread_mutex_unlock(p->right_fork);
 	pthread_mutex_unlock(p->left_fork);
+	if (eat_counting(p))
+		return (1);
 	return (0);
 }
 
@@ -76,9 +76,7 @@ static int	eat(t_ph *p)
 static int	sleep(t_ph *p)
 {
 	gettimeofday(&p->event, NULL);
-	if (dead_handler(p, false))
-		return (1);
-	print(p->event, p, " is sleeping\n");
+	print(p->event, p, "is sleeping\n", false);
 	sleep_to(p->event, p->m->time_to_sleep);
 	return (0);
 }
@@ -91,9 +89,7 @@ static int	sleep(t_ph *p)
 static int	think(t_ph *p)
 {
 	gettimeofday(&p->event, NULL);
-	if (dead_handler(p, false))
-		return (1);
-	print(p->event, p, " is thinking\n");
+	print(p->event, p, "is thinking\n", false);
 	return (0);
 }
 
@@ -116,9 +112,10 @@ static int	eat_counting(t_ph *p)
 		satisfied++;
 		if (satisfied == p->m->number_of_philosophers)
 		{
-			printf("All %d philosophers ate %d times", \
+			print(p->event, p, NULL, true);
+			printf("All %d philosophers ate %d times\n", \
 					satisfied, p->m->number_of_eat);
-			dead_handler(p, true);
+			read_write_dead_flag(WRITE, true);
 		}
 		pthread_mutex_unlock(&mtx_satisfied);
 		return (1);

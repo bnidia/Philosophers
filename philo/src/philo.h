@@ -12,6 +12,8 @@
 
 #ifndef PHILO_H
 # define PHILO_H
+# define READ 0
+# define WRITE 1
 
 # include <limits.h>
 # include <pthread.h>
@@ -39,29 +41,33 @@ struct s_main
 
 struct s_philo
 {
-	int				id;
-	pthread_t		tid;
-	t_mutex			*left_fork;
-	t_mutex			*right_fork;
-	int				number_of_eat;
-	struct timeval	event;
-	struct timeval	eat_before;
-	t_main			*m;
+	int			id;
+	pthread_t	tid;
+	t_mutex		*left_fork;
+	t_mutex		*right_fork;
+	int			number_of_eat;
+	t_time		event;
+	t_time		best_before;
+	t_main		*m;
 };
 
 // The basis of the program
-int		init(t_main *m, int argc, char **argv);
-int		simulation(t_main *m);
-void	memory_clearing(t_main *m);
+int			init(t_main *m, int argc, char **argv);
+int			simulation(t_main *m);
+void		memory_clearing(t_main *m);
 
 // Functions for initialization
-int		ft_atoi_r(const char *num_ptr, int *result);
+int			ft_atoi_r(const char *num_ptr, int *result);
 
 // The function of the philosopher
-void	*philosopher(void *args);
-void	sleep_to(t_time t_event, int time);
-void	print(t_time time, t_ph *p, char *str);
-t_time	calc_time_sum(t_time *t_event, long time);
-bool	dead_handler(t_ph *p, bool set_dead);
+void		*philosopher(void *args);
+void		sleep_to(t_time t_event, int time);
+void		print(t_time time, t_ph *p, char *str, bool lock);
+t_time		calc_time_sum(t_time *t_event, long time);
+
+bool		dead_handler(t_ph *p);
+t_time		read_write_best_before(t_ph *p, int flag, t_time *write_value);
+bool		read_write_dead_flag(int flag, bool set_dead);
+long long	calc_time_diff(t_time *minuend, t_time *subtrahend);
 
 #endif

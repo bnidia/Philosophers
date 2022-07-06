@@ -13,7 +13,7 @@
 #include "philo.h"
 #include <unistd.h>
 /* You can use macros available in standard libraries, only if those
- * ones are allowed in the scope of the given project.
+ * are allowed in the scope of the given project.
  * timercmp(&t, &t, <) - time comparison macro */
 
 /** @name sleep_to
@@ -23,15 +23,14 @@
  * @author bnidia										*/
 void	sleep_to(t_time t_event, int time)
 {
-	t_time	t_current;
-	long	sleep_time;
+	t_time		t_current;
+	long long	diff;
 
 	calc_time_sum(&t_event, time);
-	sleep_time = time * 1000;
 	while (!gettimeofday(&t_current, NULL) && timercmp(&t_current, &t_event, <))
 	{
-		usleep(sleep_time * 9 / 10);
-		sleep_time -= sleep_time * 9 / 10;
+		diff = calc_time_diff(&t_event, &t_current);
+		usleep(diff * 8 / 10);
 	}
 }
 
@@ -50,4 +49,10 @@ t_time	calc_time_sum(t_time *t_event, long time)
 		t_event->tv_usec -= 1000000;
 	}
 	return (*t_event);
+}
+
+long long	calc_time_diff(t_time *minuend, t_time *subtrahend)
+{
+	return (minuend->tv_usec - subtrahend->tv_usec + \
+	(minuend->tv_sec - subtrahend->tv_sec) * 1000000);
 }

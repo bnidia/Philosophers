@@ -14,7 +14,7 @@
 #include "philo.h"
 
 static int	start_philo_lifes(t_ph *p, int num_of_philo);
-static int	one_philosopher_case(t_main *m);
+//static int	one_philosopher_case(t_main *m);
 
 /** @name simulation
  * @description main frame of the program
@@ -27,11 +27,9 @@ int	simulation(t_main *m)
 		return (printf("start_philo_lifes() error\n"));
 	while (42)
 	{
-		if (m->number_of_philosophers == 1 && one_philosopher_case(m))
+		if (read_write_dead_flag(READ, NULL))
 			break ;
-		if (dead_handler(NULL, false))
-			break ;
-		usleep(1000);
+		usleep(5000);
 	}
 	return (0);
 }
@@ -63,22 +61,6 @@ static int	start_philo_lifes(t_ph *p, int num_of_philo)
 			return (printf("pthread_create() error!\n"));
 		pthread_detach(p[i].tid);
 		i += 2;
-	}
-	return (0);
-}
-
-static int	one_philosopher_case(t_main *m)
-{
-	struct timeval	last_time_eat;
-	struct timeval	current_time;
-
-	last_time_eat = m->philo[0].event;
-	calc_time_sum(&last_time_eat, m->time_to_die);
-	gettimeofday(&current_time, NULL);
-	if (timercmp(&current_time, &last_time_eat, >))
-	{
-		print(current_time, &m->philo[0], " is died. Process is finished\n");
-		return (1);
 	}
 	return (0);
 }

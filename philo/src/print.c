@@ -21,25 +21,27 @@ static void	reset(void);
  * number id of philosopher, char *str - string to print
  * @return nothing
  * @author bnidia													*/
-void	print(t_time time, t_ph *p, char *str)
+void	print(t_time time, t_ph *p, char *str, bool lock)
 {
 	static t_mutex	screen = PTHREAD_MUTEX_INITIALIZER;
 	int				id;
 
 	id = p->id;
 	pthread_mutex_lock(&screen);
+	if (lock == true && str == NULL)
+		return ;
 	if (id % 2 == 0)
 		yellow();
-	printf
-	("%ld %ld %d %s",
-			time.tv_sec,
-			time.tv_usec,
-			id,
-			str
+	printf("%ld%03ld %d %s", \
+			time.tv_sec, \
+			(time.tv_usec + 500) / 1000, \
+			id, \
+			str \
 	);
 	if (id % 2 == 0)
 		reset();
-	pthread_mutex_unlock(&screen);
+	if (lock == false)
+		pthread_mutex_unlock(&screen);
 }
 
 /** @name yellow
